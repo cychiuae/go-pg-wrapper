@@ -5,7 +5,7 @@ package mocks
 import context "context"
 import io "io"
 import mock "github.com/stretchr/testify/mock"
-import orm "gitlab.com/cychiuae/go-pg-wrapper/v10/orm"
+import orm "github.com/cychiuae/go-pg-wrapper/v10/orm"
 import pg "github.com/go-pg/pg/v10"
 import v9orm "github.com/go-pg/pg/v10/orm"
 

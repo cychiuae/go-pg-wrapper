@@ -1,4 +1,4 @@
-module gitlab.com/cychiuae/go-pg-wrapper/v10
+module github.com/cychiuae/go-pg-wrapper/v10
 
 go 1.14
 

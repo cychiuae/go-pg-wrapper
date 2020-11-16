@@ -7,7 +7,7 @@ use interfaces, for simpler unit testing.
 
 ## Usage
 
-`go get -u gitlab.com/cychiuae/go-pg-wrapper/v10`
+`go get -u github.com/cychiuae/go-pg-wrapper/v10`
 
 Connect to your database using `go-pg` as you normally would, and pass the
 `*pg.DB` to `pgwrapper.NewDB()`:
@@ -16,7 +16,7 @@ Connect to your database using `go-pg` as you normally would, and pass the
 package main
 
 import (
-	pgwrapper "gitlab.com/cychiuae/go-pg-wrapper/v10"
+	pgwrapper "github.com/cychiuae/go-pg-wrapper/v10"
 	"github.com/go-pg/pg/v10"
 )
 
@@ -43,7 +43,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/cychiuae/go-pg-wrapper/v10/mocks"
+	"github.com/cychiuae/go-pg-wrapper/v10/mocks"
 )
 
 func TestFoo(t *testing.T) {

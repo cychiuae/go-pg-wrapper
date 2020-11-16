@@ -19,9 +19,9 @@ import (
 	"context"
 	"io"
 
+	"github.com/cychiuae/go-pg-wrapper/v10/orm"
 	"github.com/go-pg/pg/v10"
 	pgorm "github.com/go-pg/pg/v10/orm"
-	"gitlab.com/cychiuae/go-pg-wrapper/v10/orm"
 )
 
 type Tx interface {
