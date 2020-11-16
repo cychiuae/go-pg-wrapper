@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/go-pg/pg/v10"
-	"gitlab.com/slax0rr/go-pg-wrapper/orm"
+	"gitlab.com/cychiuae/go-pg-wrapper/v10/orm"
 )
 
 type DB interface {

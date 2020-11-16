@@ -1,4 +1,4 @@
-module gitlab.com/slax0rr/go-pg-wrapper
+module gitlab.com/cychiuae/go-pg-wrapper/v10
 
 go 1.14
 

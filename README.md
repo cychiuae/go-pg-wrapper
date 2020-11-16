@@ -12,7 +12,7 @@ Connect to your database using `go-pg` as you normally would, and pass the
 package main
 
 import (
-	pgwrapper "gitlab.com/slax0rr/go-pg-wrapper"
+	pgwrapper "gitlab.com/cychiuae/go-pg-wrapper/v10"
 	"github.com/go-pg/pg/v10"
 )
 
@@ -39,7 +39,7 @@ import (
 
 	"github.com/stretchr/testify/mock"
 	"github.com/stretchr/testify/assert"
-	"gitlab.com/slax0rr/go-pg-wrapper/mocks"
+	"gitlab.com/cychiuae/go-pg-wrapper/v10/mocks"
 )
 
 func TestFoo(t *testing.T) {

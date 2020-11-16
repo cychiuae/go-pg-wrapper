@@ -22,7 +22,7 @@ import (
 
 	"github.com/go-pg/pg/v10"
 	pgorm "github.com/go-pg/pg/v10/orm"
-	"gitlab.com/slax0rr/go-pg-wrapper/orm"
+	"gitlab.com/cychiuae/go-pg-wrapper/v10/orm"
 )
 
 type Conn interface {
