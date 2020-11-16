@@ -20,8 +20,8 @@ import (
 	"io"
 	"time"
 
-	"github.com/go-pg/pg/v9"
-	pgorm "github.com/go-pg/pg/v9/orm"
+	"github.com/go-pg/pg/v10"
+	pgorm "github.com/go-pg/pg/v10/orm"
 	"gitlab.com/slax0rr/go-pg-wrapper/orm"
 )
 
@@ -32,18 +32,11 @@ type Conn interface {
 	Context() context.Context
 	CopyFrom(r io.Reader, query interface{}, params ...interface{}) (res pg.Result, err error)
 	CopyTo(w io.Writer, query interface{}, params ...interface{}) (res pg.Result, err error)
-	CreateComposite(model interface{}, opt *pgorm.CreateCompositeOptions) error
-	CreateTable(model interface{}, opt *pgorm.CreateTableOptions) error
-	Delete(model interface{}) error
-	DropComposite(model interface{}, opt *pgorm.DropCompositeOptions) error
-	DropTable(model interface{}, opt *pgorm.DropTableOptions) error
 	Exec(query interface{}, params ...interface{}) (res pg.Result, err error)
 	ExecContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
 	ExecOne(query interface{}, params ...interface{}) (pg.Result, error)
 	ExecOneContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
-	ForceDelete(model interface{}) error
 	Formatter() pgorm.QueryFormatter
-	Insert(model ...interface{}) error
 	Model(model ...interface{}) orm.Query
 	ModelContext(c context.Context, model ...interface{}) orm.Query
 	Param(param string) interface{}
@@ -53,9 +46,7 @@ type Conn interface {
 	QueryContext(c context.Context, model, query interface{}, params ...interface{}) (pg.Result, error)
 	QueryOne(model, query interface{}, params ...interface{}) (pg.Result, error)
 	QueryOneContext(c context.Context, model, query interface{}, params ...interface{}) (pg.Result, error)
-	RunInTransaction(fn func(Tx) error) error
-	Select(model interface{}) error
-	Update(model interface{}) error
+	RunInTransaction(ctx context.Context, fn func(Tx) error) error
 	WithContext(ctx context.Context) Conn
 	WithParam(param string, value interface{}) Conn
 	WithTimeout(d time.Duration) Conn
@@ -97,26 +88,6 @@ func (c *ConnWrap) CopyTo(w io.Writer, query interface{}, params ...interface{})
 	return c.conn.CopyTo(w, query, params...)
 }
 
-func (c *ConnWrap) CreateComposite(model interface{}, opt *pgorm.CreateCompositeOptions) error {
-	return c.conn.CreateComposite(model, opt)
-}
-
-func (c *ConnWrap) CreateTable(model interface{}, opt *pgorm.CreateTableOptions) error {
-	return c.conn.CreateTable(model, opt)
-}
-
-func (c *ConnWrap) Delete(model interface{}) error {
-	return c.conn.Delete(model)
-}
-
-func (c *ConnWrap) DropComposite(model interface{}, opt *pgorm.DropCompositeOptions) error {
-	return c.conn.DropComposite(model, opt)
-}
-
-func (c *ConnWrap) DropTable(model interface{}, opt *pgorm.DropTableOptions) error {
-	return c.conn.DropTable(model, opt)
-}
-
 func (c *ConnWrap) Exec(query interface{}, params ...interface{}) (res pg.Result, err error) {
 	return c.conn.Exec(query, params...)
 }
@@ -133,16 +104,8 @@ func (c *ConnWrap) ExecOneContext(ctx context.Context, query interface{}, params
 	return c.conn.ExecOneContext(ctx, query, params...)
 }
 
-func (c *ConnWrap) ForceDelete(model interface{}) error {
-	return c.conn.ForceDelete(model)
-}
-
 func (c *ConnWrap) Formatter() pgorm.QueryFormatter {
 	return c.conn.Formatter()
-}
-
-func (c *ConnWrap) Insert(model ...interface{}) error {
-	return c.conn.Insert(model...)
 }
 
 func (c *ConnWrap) Model(model ...interface{}) orm.Query {
@@ -185,20 +148,12 @@ func (c *ConnWrap) QueryOneContext(ctx context.Context, model, query interface{}
 	return c.conn.QueryOneContext(ctx, model, query, params...)
 }
 
-func (c *ConnWrap) RunInTransaction(fn func(Tx) error) error {
+func (c *ConnWrap) RunInTransaction(ctx context.Context, fn func(Tx) error) error {
 	tx, err := c.conn.Begin()
 	if err != nil {
 		return err
 	}
-	return NewTx(tx).RunInTransaction(fn)
-}
-
-func (c *ConnWrap) Select(model interface{}) error {
-	return c.conn.Select(model)
-}
-
-func (c *ConnWrap) Update(model interface{}) error {
-	return c.conn.Update(model)
+	return NewTx(tx).RunInTransaction(ctx, fn)
 }
 
 func (c *ConnWrap) WithContext(ctx context.Context) Conn {

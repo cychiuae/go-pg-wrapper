@@ -19,8 +19,8 @@ import (
 	"context"
 	"io"
 
-	"github.com/go-pg/pg/v9"
-	pgorm "github.com/go-pg/pg/v9/orm"
+	"github.com/go-pg/pg/v10"
+	pgorm "github.com/go-pg/pg/v10/orm"
 	"gitlab.com/slax0rr/go-pg-wrapper/orm"
 )
 
@@ -31,16 +31,11 @@ type Tx interface {
 	Context() context.Context
 	CopyFrom(r io.Reader, query interface{}, params ...interface{}) (res pg.Result, err error)
 	CopyTo(w io.Writer, query interface{}, params ...interface{}) (res pg.Result, err error)
-	CreateTable(model interface{}, opt *pgorm.CreateTableOptions) error
-	Delete(model interface{}) error
-	DropTable(model interface{}, opt *pgorm.DropTableOptions) error
 	Exec(query interface{}, params ...interface{}) (pg.Result, error)
 	ExecContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
 	ExecOne(query interface{}, params ...interface{}) (pg.Result, error)
 	ExecOneContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
-	ForceDelete(model interface{}) error
 	Formatter() pgorm.QueryFormatter
-	Insert(model ...interface{}) error
 	Model(model ...interface{}) orm.Query
 	ModelContext(c context.Context, model ...interface{}) orm.Query
 	Prepare(q string) (*pg.Stmt, error)
@@ -49,10 +44,8 @@ type Tx interface {
 	QueryOne(model interface{}, query interface{}, params ...interface{}) (pg.Result, error)
 	QueryOneContext(c context.Context, model interface{}, query interface{}, params ...interface{}) (pg.Result, error)
 	Rollback() error
-	RunInTransaction(fn func(Tx) error) error
-	Select(model interface{}) error
+	RunInTransaction(context.Context, func(Tx) error) error
 	Stmt(stmt Stmt) Stmt
-	Update(model interface{}) error
 }
 
 type TxWrap struct {
@@ -91,18 +84,6 @@ func (t *TxWrap) CopyTo(w io.Writer, query interface{}, params ...interface{}) (
 	return t.tx.CopyTo(w, query, params...)
 }
 
-func (t *TxWrap) CreateTable(model interface{}, opt *pgorm.CreateTableOptions) error {
-	return t.tx.CreateTable(model, opt)
-}
-
-func (t *TxWrap) Delete(model interface{}) error {
-	return t.tx.Delete(model)
-}
-
-func (t *TxWrap) DropTable(model interface{}, opt *pgorm.DropTableOptions) error {
-	return t.tx.DropTable(model, opt)
-}
-
 func (t *TxWrap) Exec(query interface{}, params ...interface{}) (pg.Result, error) {
 	return t.tx.Exec(query, params...)
 }
@@ -119,16 +100,8 @@ func (t *TxWrap) ExecOneContext(c context.Context, query interface{}, params ...
 	return t.tx.ExecOneContext(c, query, params...)
 }
 
-func (t *TxWrap) ForceDelete(model interface{}) error {
-	return t.tx.ForceDelete(model)
-}
-
 func (t *TxWrap) Formatter() pgorm.QueryFormatter {
 	return t.tx.Formatter()
-}
-
-func (t *TxWrap) Insert(model ...interface{}) error {
-	return t.tx.Insert(model...)
 }
 
 func (t *TxWrap) Model(model ...interface{}) orm.Query {
@@ -163,18 +136,10 @@ func (t *TxWrap) Rollback() error {
 	return t.tx.Rollback()
 }
 
-func (t *TxWrap) RunInTransaction(fn func(Tx) error) error {
-	return t.tx.RunInTransaction(func(tx *pg.Tx) error { return fn(t) })
-}
-
-func (t *TxWrap) Select(model interface{}) error {
-	return t.tx.Select(model)
+func (t *TxWrap) RunInTransaction(ctx context.Context, fn func(Tx) error) error {
+	return t.tx.RunInTransaction(ctx, func(tx *pg.Tx) error { return fn(t) })
 }
 
 func (t *TxWrap) Stmt(stmt Stmt) Stmt {
 	return NewStmt(t.tx.Stmt(stmt.(*StmtWrap).stmt))
-}
-
-func (t *TxWrap) Update(model interface{}) error {
-	return t.tx.Update(model)
 }

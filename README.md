@@ -13,7 +13,7 @@ package main
 
 import (
 	pgwrapper "gitlab.com/slax0rr/go-pg-wrapper"
-	"github.com/go-pg/pg/v9"
+	"github.com/go-pg/pg/v10"
 )
 
 func main() {

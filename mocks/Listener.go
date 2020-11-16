@@ -3,7 +3,7 @@
 package mocks
 
 import mock "github.com/stretchr/testify/mock"
-import pg "github.com/go-pg/pg/v9"
+import pg "github.com/go-pg/pg/v10"
 
 import time "time"
 

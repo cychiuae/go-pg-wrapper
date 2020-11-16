@@ -19,8 +19,8 @@ import (
 	"context"
 	"io"
 
-	"github.com/go-pg/pg/v9"
-	pgorm "github.com/go-pg/pg/v9/orm"
+	"github.com/go-pg/pg/v10"
+	pgorm "github.com/go-pg/pg/v10/orm"
 )
 
 type Query interface {
@@ -95,7 +95,6 @@ type Query interface {
 	WhereOrGroup(fn func(Query) (Query, error)) Query
 	WhereOrNotGroup(fn func(Query) (Query, error)) Query
 	WherePK() Query
-	WhereStruct(strct interface{}) Query
 	With(name string, subq Query) Query
 	WithDelete(name string, subq Query) Query
 	WithInsert(name string, subq Query) Query
@@ -420,10 +419,6 @@ func (q *QueryWrap) WhereOrNotGroup(fn func(Query) (Query, error)) Query {
 
 func (q *QueryWrap) WherePK() Query {
 	return NewQuery(q.query.WherePK())
-}
-
-func (q *QueryWrap) WhereStruct(strct interface{}) Query {
-	return NewQuery(q.query.WhereStruct(strct))
 }
 
 func (q *QueryWrap) With(name string, subq Query) Query {

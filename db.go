@@ -20,8 +20,7 @@ import (
 	"io"
 	"time"
 
-	"github.com/go-pg/pg/v9"
-	pgorm "github.com/go-pg/pg/v9/orm"
+	"github.com/go-pg/pg/v10"
 	"gitlab.com/slax0rr/go-pg-wrapper/orm"
 )
 
@@ -33,19 +32,10 @@ type DB interface {
 	Context() context.Context
 	CopyFrom(r io.Reader, query interface{}, params ...interface{}) (res pg.Result, err error)
 	CopyTo(w io.Writer, query interface{}, params ...interface{}) (res pg.Result, err error)
-	CreateComposite(model interface{}, opt *pgorm.CreateCompositeOptions) error
-	CreateTable(model interface{}, opt *pgorm.CreateTableOptions) error
-	Delete(model interface{}) error
-	DropComposite(model interface{}, opt *pgorm.DropCompositeOptions) error
-	DropTable(model interface{}, opt *pgorm.DropTableOptions) error
 	Exec(query interface{}, params ...interface{}) (res pg.Result, err error)
 	ExecContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
 	ExecOne(query interface{}, params ...interface{}) (pg.Result, error)
 	ExecOneContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error)
-	ForceDelete(model interface{}) error
-	Formatter() pgorm.QueryFormatter
-	Insert(model ...interface{}) error
-	Listen(channels ...string) Listener
 	Model(model ...interface{}) orm.Query
 	ModelContext(c context.Context, model ...interface{}) orm.Query
 	Options() *pg.Options
@@ -56,10 +46,8 @@ type DB interface {
 	QueryContext(c context.Context, model, query interface{}, params ...interface{}) (pg.Result, error)
 	QueryOne(model, query interface{}, params ...interface{}) (pg.Result, error)
 	QueryOneContext(c context.Context, model, query interface{}, params ...interface{}) (pg.Result, error)
-	RunInTransaction(fn func(Tx) error) error
-	Select(model interface{}) error
+	RunInTransaction(ctx context.Context, fn func(Tx) error) error
 	String() string
-	Update(model interface{}) error
 	WithContext(ctx context.Context) DB
 	WithParam(param string, value interface{}) DB
 	WithTimeout(dur time.Duration) DB
@@ -105,26 +93,6 @@ func (d *DBWrap) CopyTo(w io.Writer, query interface{}, params ...interface{}) (
 	return d.db.CopyTo(w, query, params...)
 }
 
-func (d *DBWrap) CreateComposite(model interface{}, opt *pgorm.CreateCompositeOptions) error {
-	return d.db.CreateComposite(model, opt)
-}
-
-func (d *DBWrap) CreateTable(model interface{}, opt *pgorm.CreateTableOptions) error {
-	return d.db.CreateTable(model, opt)
-}
-
-func (d *DBWrap) Delete(model interface{}) error {
-	return d.db.Delete(model)
-}
-
-func (d *DBWrap) DropComposite(model interface{}, opt *pgorm.DropCompositeOptions) error {
-	return d.db.DropComposite(model, opt)
-}
-
-func (d *DBWrap) DropTable(model interface{}, opt *pgorm.DropTableOptions) error {
-	return d.db.DropTable(model, opt)
-}
-
 func (d *DBWrap) Exec(query interface{}, params ...interface{}) (res pg.Result, err error) {
 	return d.db.Exec(query, params...)
 }
@@ -139,23 +107,6 @@ func (d *DBWrap) ExecOne(query interface{}, params ...interface{}) (res pg.Resul
 
 func (d *DBWrap) ExecOneContext(ctx context.Context, query interface{}, params ...interface{}) (res pg.Result, err error) {
 	return d.db.ExecOneContext(ctx, query, params...)
-}
-
-func (d *DBWrap) ForceDelete(model interface{}) error {
-	return d.db.ForceDelete(model)
-}
-
-func (d *DBWrap) Formatter() pgorm.QueryFormatter {
-	return d.db.Formatter()
-}
-
-func (d *DBWrap) Insert(model ...interface{}) error {
-	return d.db.Insert(model...)
-}
-
-func (d *DBWrap) Listen(channels ...string) Listener {
-	listener := d.db.Listen(channels...)
-	return NewListener(listener)
 }
 
 func (d *DBWrap) Model(model ...interface{}) orm.Query {
@@ -204,24 +155,16 @@ func (d *DBWrap) QueryOneContext(c context.Context, model, query interface{}, pa
 	return d.db.QueryOneContext(c, model, query, params...)
 }
 
-func (d *DBWrap) RunInTransaction(fn func(Tx) error) error {
+func (d *DBWrap) RunInTransaction(ctx context.Context, fn func(Tx) error) error {
 	tx, err := d.db.Begin()
 	if err != nil {
 		return err
 	}
-	return NewTx(tx).RunInTransaction(fn)
-}
-
-func (d *DBWrap) Select(model interface{}) error {
-	return d.db.Select(model)
+	return NewTx(tx).RunInTransaction(ctx, fn)
 }
 
 func (d *DBWrap) String() string {
 	return d.db.String()
-}
-
-func (d *DBWrap) Update(model interface{}) error {
-	return d.db.Update(model)
 }
 
 func (d *DBWrap) WithContext(ctx context.Context) DB {
