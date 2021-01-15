@@ -147,7 +147,7 @@ func (q *QueryWrap) Context(c context.Context) Query {
 }
 
 func (q *QueryWrap) CopyFrom(r io.Reader, query interface{}, params ...interface{}) (pgorm.Result, error) {
-	return q.query.CopyFrom(r, query, params)
+	return q.query.CopyFrom(r, query, params...)
 }
 
 func (q *QueryWrap) CopyTo(w io.Writer, query interface{}, params ...interface{}) (pgorm.Result, error) {
@@ -239,7 +239,7 @@ func (q *QueryWrap) GroupExpr(group string, params ...interface{}) Query {
 }
 
 func (q *QueryWrap) Having(having string, params ...interface{}) Query {
-	return NewQuery(q.query.Having(having, params))
+	return NewQuery(q.query.Having(having, params...))
 }
 
 func (q *QueryWrap) Insert(values ...interface{}) (pgorm.Result, error) {
@@ -338,7 +338,7 @@ func (q *QueryWrap) SelectOrInsert(values ...interface{}) (inserted bool, _ erro
 }
 
 func (q *QueryWrap) Set(set string, params ...interface{}) Query {
-	return NewQuery(q.query.Set(set, params))
+	return NewQuery(q.query.Set(set, params...))
 }
 
 func (q *QueryWrap) Table(tables ...string) Query {
@@ -346,7 +346,7 @@ func (q *QueryWrap) Table(tables ...string) Query {
 }
 
 func (q *QueryWrap) TableExpr(expr string, params ...interface{}) Query {
-	return NewQuery(q.query.TableExpr(expr, params))
+	return NewQuery(q.query.TableExpr(expr, params...))
 }
 
 func (q *QueryWrap) TableModel() pgorm.TableModel {
@@ -400,7 +400,7 @@ func (q *QueryWrap) WhereNotGroup(fn func(Query) (Query, error)) Query {
 }
 
 func (q *QueryWrap) WhereOr(condition string, params ...interface{}) Query {
-	return NewQuery(q.query.WhereOr(condition, params))
+	return NewQuery(q.query.WhereOr(condition, params...))
 }
 
 func (q *QueryWrap) WhereOrGroup(fn func(Query) (Query, error)) Query {

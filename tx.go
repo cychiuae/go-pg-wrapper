@@ -93,7 +93,7 @@ func (t *TxWrap) ExecContext(c context.Context, query interface{}, params ...int
 }
 
 func (t *TxWrap) ExecOne(query interface{}, params ...interface{}) (pg.Result, error) {
-	return t.tx.ExecOne(query, params)
+	return t.tx.ExecOne(query, params...)
 }
 
 func (t *TxWrap) ExecOneContext(c context.Context, query interface{}, params ...interface{}) (pg.Result, error) {

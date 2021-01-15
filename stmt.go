@@ -50,19 +50,19 @@ func (s *StmtWrap) Exec(params ...interface{}) (pg.Result, error) {
 }
 
 func (s *StmtWrap) ExecContext(c context.Context, params ...interface{}) (pg.Result, error) {
-	return s.stmt.ExecContext(c, params)
+	return s.stmt.ExecContext(c, params...)
 }
 
 func (s *StmtWrap) ExecOne(params ...interface{}) (pg.Result, error) {
-	return s.stmt.ExecOne(params)
+	return s.stmt.ExecOne(params...)
 }
 
 func (s *StmtWrap) ExecOneContext(c context.Context, params ...interface{}) (pg.Result, error) {
-	return s.stmt.ExecOneContext(c, params)
+	return s.stmt.ExecOneContext(c, params...)
 }
 
 func (s *StmtWrap) Query(model interface{}, params ...interface{}) (pg.Result, error) {
-	return s.stmt.Query(model, params)
+	return s.stmt.Query(model, params...)
 }
 
 func (s *StmtWrap) QueryContext(c context.Context, model interface{}, params ...interface{}) (pg.Result, error) {
